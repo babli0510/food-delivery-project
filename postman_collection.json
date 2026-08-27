@@ -1,0 +1,526 @@
+{
+  "info": {
+    "name": "Food Delivery Backend",
+    "description": "Full API collection for all 6 features. Set the {{baseUrl}} and {{token}}/{{adminToken}} variables after login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "restaurantId",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"Test@1234\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"Demo@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Login (Demo User - no history)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demouser@test.com\",\n  \"password\": \"Demo@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Login (Demo User - foodie, HAS history)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"foodie@test.com\",\n  \"password\": \"Demo@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Restaurants",
+      "item": [
+        {
+          "name": "Search Restaurants",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/restaurants/search?cuisine=Indian&rating=4&maxDeliveryTime=40"
+          }
+        },
+        {
+          "name": "Fuzzy Text Search",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/restaurants/search?q=biryni"
+          }
+        },
+        {
+          "name": "Get Restaurant By Id (records view interaction)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/restaurants/{{restaurantId}}"
+          }
+        },
+        {
+          "name": "Get Recommendations (Personalized)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/restaurants/recommendations/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Preview Delivery Fee",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/orders/calculate-delivery-fee?lng=75.9064&lat=17.6599"
+          }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"items\": [\n    { \"name\": \"Paneer Tikka\", \"price\": 220, \"quantity\": 2 }\n  ],\n  \"deliveryLocation\": {\n    \"type\": \"Point\",\n    \"coordinates\": [75.9070, 17.6605]\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/orders/create"
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Changed my mind\"\n}"
+            },
+            "url": "{{baseUrl}}/api/orders/cancel/{{orderId}}"
+          }
+        },
+        {
+          "name": "Request Refund",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Food arrived cold\",\n  \"amount\": 260\n}"
+            },
+            "url": "{{baseUrl}}/api/orders/refund/<order_id>"
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}"
+            },
+            "url": "{{baseUrl}}/api/orders/update-status/{{orderId}}"
+          }
+        },
+        {
+          "name": "Get Order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/orders/{{orderId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delivery Partner",
+      "item": [
+        {
+          "name": "Set Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partnerId\": \"<partner_id>\",\n  \"isAvailable\": true,\n  \"coordinates\": [75.9070, 17.6600]\n}"
+            },
+            "url": "{{baseUrl}}/api/delivery/set-status"
+          }
+        },
+        {
+          "name": "Decline Order (Auto-Reassign)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partnerId\": \"<partner_id>\"\n}"
+            },
+            "url": "{{baseUrl}}/api/delivery/decline/<order_id>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get Flagged Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/fraud/orders?status=pending"
+          }
+        },
+        {
+          "name": "Review Flagged Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"approve\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/fraud/orders/<fraud_log_id>"
+          }
+        },
+        {
+          "name": "Get Refund Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/refunds?status=pending"
+          }
+        },
+        {
+          "name": "Review Refund Request",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"approve\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/refunds/<order_id>"
+          }
+        },
+        {
+          "name": "Create Restaurant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Restaurant\",\n  \"cuisine\": [\"Indian\"],\n  \"rating\": 4.2,\n  \"avgDeliveryTime\": 25,\n  \"isVeg\": false,\n  \"priceRange\": \"medium\",\n  \"location\": { \"type\": \"Point\", \"coordinates\": [75.9064, 17.6599] }\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/restaurants/create"
+          }
+        },
+        {
+          "name": "Update Restaurant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4.6\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/restaurants/update/{{restaurantId}}"
+          }
+        },
+        {
+          "name": "Add Menu Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Chicken Biryani\",\n  \"price\": 250,\n  \"isVeg\": false\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/restaurants/{{restaurantId}}/menu"
+          }
+        },
+        {
+          "name": "Get Surge Settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/surge-settings"
+          }
+        },
+        {
+          "name": "Update Surge Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"baseFee\": 35,\n  \"peakMultiplierAdd\": 0.6\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/surge-settings"
+          }
+        },
+        {
+          "name": "Create Delivery Partner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Partner\",\n  \"phone\": \"9876543210\",\n  \"location\": { \"type\": \"Point\", \"coordinates\": [75.9064, 17.6599] }\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/delivery-partners/create"
+          }
+        },
+        {
+          "name": "Recommendation Monitoring - User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/recommendations/{{userId}}"
+          }
+        },
+        {
+          "name": "Recommendation Monitoring - Platform Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/recommendations/stats"
+          }
+        }
+      ]
+    }
+  ]
+}

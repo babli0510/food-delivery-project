@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: food-delivery-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_SEED_NAME
+        sync: false
+      - key: ADMIN_SEED_EMAIL
+        sync: false
+      - key: ADMIN_SEED_PASSWORD
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: NODE_ENV
+        value: production
